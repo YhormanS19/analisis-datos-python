@@ -13,19 +13,17 @@ df = manejar_valores_nulos(df, estrategia="drop")
 df = estandarizar_texto(df, ["producto", "categoria"])
 df = limpiar_precio(df, "precio")
 
-print("✅ Dataset limpio. Filas:", len(df))
+print("Dataset limpio. Filas:", len(df))
 print(df.head())
 
-# -----------------------------
-# A) FILTRADO
+
+# FILTRADO
 # -----------------------------
 df_gadgets = df[df["categoria"] == "gadgets"]
-print("\n[A] Filtrado: ¿cuántos son gadgets?")
+print("\nFiltrado: ¿cuántos son gadgets?")
 print("Total gadgets:", len(df_gadgets))
 
-# -----------------------------
-# B) MERGE (ejemplo real)
-# Creamos una tabla de categorías con un "impuesto" y la unimos al df
+# Se una tabla de categorías con un "impuesto" y la unimos al df
 # -----------------------------
 impuestos = {
     "gadgets": 0.19,
@@ -41,13 +39,12 @@ df_cat = (
 df_merge = df.merge(df_cat, on="categoria", how="left")
 df_merge["precio_con_impuesto"] = df_merge["precio"] * (1 + df_merge["impuesto"])
 
-print("\n[B] Merge: columnas nuevas -> impuesto, precio_con_impuesto")
+print("\n Merge: columnas nuevas -> impuesto, precio_con_impuesto")
 print(df_merge[["producto", "categoria", "precio", "impuesto", "precio_con_impuesto"]].head())
 
+# GROUPBY
 # -----------------------------
-# C) GROUPBY (preguntas clave)
-# -----------------------------
-print("\n[C] GroupBy: resumen por categoría (conteo, total, promedio)")
+print("\n GroupBy: resumen por categoría (conteo, total, promedio)")
 resumen = (
     df_merge.groupby("categoria")["precio"]
     .agg(conteo="count", total="sum", promedio="mean", maximo="max", minimo="min")
@@ -55,6 +52,6 @@ resumen = (
 )
 print(resumen)
 
-print("\n[C2] Top 3 productos más caros:")
+print("\n Top 3 productos más caros:")
 top3 = df_merge.sort_values(by="precio", ascending=False).head(3)[["producto", "categoria", "precio"]]
 print(top3.to_string(index=False))
